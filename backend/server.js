@@ -9,7 +9,19 @@ const connectDB = require('./db');
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: ['http://localhost:3000', 'http://localhost:3001'], credentials: true }
+  cors: {
+    origin: (origin, cb) => {
+      const allowed = [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        process.env.FRONTEND_URL,
+        process.env.ADMIN_URL,
+      ].filter(Boolean);
+      if (!origin || allowed.includes(origin)) return cb(null, true);
+      cb(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+  },
 });
 
 // make io accessible in routes
@@ -17,7 +29,21 @@ app.set('io', io);
 
 const port = process.env.PORT || 5000;
 
-app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:3001'], credentials: true }));
+const ALLOWED_ORIGINS = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'https://fresh-mart-sigma.vercel.app',
+  process.env.FRONTEND_URL,
+  process.env.ADMIN_URL,
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+    cb(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+}));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/admin', express.static(path.join(__dirname, '..', 'admin', 'build')));
