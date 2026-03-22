@@ -49,7 +49,7 @@ router.get('/:id', async (req, res) => {
     console.log('[GET /products/:id]', req.params.id, '->', p ? p.name : 'NOT FOUND');
     if (!p) return res.status(404).json({ message: 'Product not found' });
     let img = p.image;
-    if (img && img.startsWith('/uploads/')) img = `http://localhost:5000${img}`;
+    if (img && img.startsWith('/uploads/')) img = `${process.env.BACKEND_URL || 'http://localhost:5000'}${img}`;
 
     // Fetch seller/shop details
     let seller = null;

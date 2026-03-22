@@ -1,14 +1,9 @@
 const router = require('express').Router();
-const multer = require('multer');
-const path = require('path');
 const User = require('../models/User');
 const authMiddleware = require('../middleware/auth');
+const { makeUpload } = require('../utils/cloudinary');
 
-const storage = multer.diskStorage({
-  destination: 'uploads/avatars/',
-  filename: (req, file, cb) => cb(null, `user-${req.params.id}-${Date.now()}${path.extname(file.originalname)}`),
-});
-const upload = multer({ storage, limits: { fileSize: 2 * 1024 * 1024 } });
+const upload = makeUpload('avatars');
 
 const PROFILE_FIELDS = ['name', 'phone', 'gender', 'dob', 'bio', 'address', 'city', 'state', 'pincode', 'country', 'locationLabel', 'lat', 'lng'];
 
@@ -49,7 +44,7 @@ router.patch('/:id', authMiddleware, async (req, res) => {
 // PATCH /api/users/:id/avatar
 router.patch('/:id/avatar', authMiddleware, upload.single('avatar'), async (req, res) => {
   if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
-  const avatarUrl = `${req.protocol}://${req.get('host')}/uploads/avatars/${req.file.filename}`;
+  const avatarUrl = req.file.path;
   await User.findByIdAndUpdate(req.params.id, { avatar: avatarUrl });
   res.json({ avatarUrl });
 });

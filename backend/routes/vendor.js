@@ -1,11 +1,14 @@
 const router = require('express').Router();
-const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const Shop = require('../models/Shop');
 const VendorProduct = require('../models/VendorProduct');
 const VendorPayment = require('../models/VendorPayment');
 const authMiddleware = require('../middleware/auth');
+const { makeUpload } = require('../utils/cloudinary');
+
+const catalogUploadMiddleware = makeUpload('catalog');
+const shopUploadMiddleware    = makeUpload('shops');
 
 const UPI_HANDLES = [
   'okaxis','oksbi','okicici','okhdfcbank','ybl','ibl','axl','paytm','apl',
@@ -58,22 +61,7 @@ const vendorOnly = (req, res, next) => {
 // All routes below require auth + vendor role
 router.use(authMiddleware, vendorOnly);
 
-// Vendor catalog image upload
-const catalogUpload = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      const dir = path.join(__dirname, '..', 'uploads', 'catalog');
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-      cb(null, dir);
-    },
-    filename: (req, file, cb) => cb(null, `vc_${Date.now()}${path.extname(file.originalname)}`),
-  }),
-  limits: { fileSize: 5 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    if (!file.mimetype.startsWith('image/')) return cb(new Error('Images only'));
-    cb(null, true);
-  },
-});
+const catalogUpload = catalogUploadMiddleware;
 
 // POST /api/vendor/catalog/category — vendor adds a new catalog category (pending admin review)
 router.post('/catalog/category', catalogUpload.single('image'), async (req, res) => {
@@ -83,7 +71,7 @@ router.post('/catalog/category', catalogUpload.single('image'), async (req, res)
     if (!name?.trim()) return res.status(400).json({ message: 'Category name required' });
     const exists = await Catalog.findOne({ name: name.trim() });
     if (exists) return res.status(409).json({ message: 'Category already exists' });
-    const imageUrl = req.file ? `/uploads/catalog/${req.file.filename}` : '';
+    const imageUrl = req.file ? req.file.path : '';
     const cat = await Catalog.create({ name: name.trim(), emoji: emoji || '🛒', image: imageUrl, items: [] });
     res.status(201).json(cat);
   } catch (e) { res.status(500).json({ message: e.message }); }
@@ -97,37 +85,20 @@ router.post('/catalog/:catId/item', catalogUpload.single('image'), async (req, r
     if (!name?.trim()) return res.status(400).json({ message: 'Item name required' });
     const cat = await Catalog.findById(req.params.catId);
     if (!cat) return res.status(404).json({ message: 'Category not found' });
-    const imageUrl = req.file ? `/uploads/catalog/${req.file.filename}` : '';
+    const imageUrl = req.file ? req.file.path : '';
     cat.items.push({ id: Date.now().toString(), name: name.trim(), unit: unit || 'kg', image: imageUrl });
     await cat.save();
     res.status(201).json(cat);
   } catch (e) { res.status(500).json({ message: e.message }); }
 });
 
-// Shop avatar upload
-const shopUpload = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      const dir = path.join(__dirname, '..', 'uploads', 'shops');
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-      cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-      cb(null, `shop_${Date.now()}${path.extname(file.originalname)}`);
-    },
-  }),
-  limits: { fileSize: 2 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    if (!file.mimetype.startsWith('image/')) return cb(new Error('Only images allowed'));
-    cb(null, true);
-  },
-});
+const shopUpload = shopUploadMiddleware;
 
 // PATCH /api/vendor/shop/:vendorId/avatar
 router.patch('/shop/:vendorId/avatar', shopUpload.single('avatar'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No image uploaded' });
-    const avatarUrl = `${req.protocol}://${req.get('host')}/uploads/shops/${req.file.filename}`;
+    const avatarUrl = req.file.path;
     const shop = await Shop.findOneAndUpdate(
       { vendorId: req.params.vendorId },
       { avatar: avatarUrl },

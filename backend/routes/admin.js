@@ -1,7 +1,7 @@
 const router  = require('express').Router();
-const multer  = require('multer');
 const path    = require('path');
 const fs      = require('fs');
+const { makeUpload } = require('../utils/cloudinary');
 const User    = require('../models/User');
 const VendorProduct = require('../models/VendorProduct');
 const Shop    = require('../models/Shop');
@@ -19,26 +19,9 @@ const adminOnly = (req, res, next) => {
   next();
 };
 
-/* ── multer setups ── */
-const mkUpload = (folder, prefix) => {
-  const dir = path.join(__dirname, '..', 'uploads', folder);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  return multer({
-    storage: multer.diskStorage({
-      destination: (_, __, cb) => cb(null, dir),
-      filename:    (_, file, cb) => cb(null, `${prefix}_${Date.now()}${path.extname(file.originalname)}`),
-    }),
-    limits: { fileSize: 5 * 1024 * 1024 },
-    fileFilter: (_, file, cb) => {
-      if (!file.mimetype.startsWith('image/')) return cb(new Error('Images only'));
-      cb(null, true);
-    },
-  });
-};
-
-const upload    = mkUpload('catalog',    'cat');
-const fcUpload  = mkUpload('categories', 'fc');
-const shopUpload = mkUpload('shops',     'shop');
+const upload     = makeUpload('catalog');
+const fcUpload   = makeUpload('categories');
+const shopUpload = makeUpload('shops');
 
 /* ══════════════════════════════════════════════════════
    NAVBAR CONFIG
@@ -143,7 +126,7 @@ router.post('/catalog', upload.single('image'), authMiddleware, adminOnly, async
     if (!name?.trim()) return res.status(400).json({ message: 'Category name required' });
     const exists = await Catalog.findOne({ name: name.trim() });
     if (exists) return res.status(409).json({ message: 'Category already exists' });
-    const imageUrl = req.file ? `/uploads/catalog/${req.file.filename}` : '';
+    const imageUrl = req.file ? req.file.path : '';
     const cat = await Catalog.create({ name: name.trim(), emoji, image: imageUrl, items: [] });
     res.status(201).json(cat);
   } catch (e) { res.status(500).json({ message: e.message }); }
@@ -156,7 +139,7 @@ router.post('/catalog/:id/items', upload.single('image'), authMiddleware, adminO
     if (!name?.trim()) return res.status(400).json({ message: 'Item name required' });
     const cat = await Catalog.findById(req.params.id);
     if (!cat) return res.status(404).json({ message: 'Category not found' });
-    const imageUrl = req.file ? `/uploads/catalog/${req.file.filename}` : '';
+    const imageUrl = req.file ? req.file.path : '';
     cat.items.push({ id: Date.now().toString(), name: name.trim(), unit, image: imageUrl });
     await cat.save();
     res.status(201).json(cat);
@@ -190,7 +173,7 @@ router.post('/front-categories', fcUpload.single('image'), authMiddleware, admin
   try {
     const { name, icon, color, bg } = req.body;
     if (!name?.trim()) return res.status(400).json({ message: 'Name required' });
-    const image = req.file ? `/uploads/categories/${req.file.filename}` : '';
+    const image = req.file ? req.file.path : '';
     const count = await FrontCategory.countDocuments();
     const cat = await FrontCategory.create({ name: name.trim(), icon: icon || '🛒', color: color || '#51cf66', bg: bg || '#f4fce3', image, order: count });
     req.app.get('io')?.emit('categories:updated');
@@ -205,7 +188,7 @@ router.patch('/front-categories/:id', fcUpload.single('image'), authMiddleware, 
   try {
     const updates = {};
     ['name', 'icon', 'color', 'bg', 'order'].forEach(f => { if (req.body[f] !== undefined) updates[f] = req.body[f]; });
-    if (req.file) updates.image = `/uploads/categories/${req.file.filename}`;
+    if (req.file) updates.image = req.file.path;
     const cat = await FrontCategory.findByIdAndUpdate(req.params.id, updates, { new: true });
     if (!cat) return res.status(404).json({ message: 'Category not found' });
     req.app.get('io')?.emit('categories:updated');
@@ -217,10 +200,6 @@ router.delete('/front-categories/:id', authMiddleware, adminOnly, async (req, re
   try {
     const cat = await FrontCategory.findByIdAndDelete(req.params.id);
     if (!cat) return res.status(404).json({ message: 'Category not found' });
-    if (cat.image?.startsWith('/uploads/')) {
-      const fp = path.join(__dirname, '..', cat.image);
-      if (fs.existsSync(fp)) fs.unlinkSync(fp);
-    }
     req.app.get('io')?.emit('categories:updated');
     res.json({ message: 'Category deleted' });
   } catch (e) { res.status(500).json({ message: e.message }); }
@@ -449,7 +428,7 @@ router.patch('/shops/:id', async (req, res) => {
 router.patch('/shops/:id/avatar', shopUpload.single('avatar'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No image uploaded' });
-    const avatarUrl = `/uploads/shops/${req.file.filename}`;
+    const avatarUrl = req.file.path;
     const shop = await Shop.findByIdAndUpdate(req.params.id, { avatar: avatarUrl }, { new: true }).populate('vendorId','name email');
     if (!shop) return res.status(404).json({ message: 'Shop not found' });
     res.json({ avatarUrl, shop });
