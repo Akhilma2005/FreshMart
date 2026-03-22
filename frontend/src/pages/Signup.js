@@ -5,7 +5,7 @@ import { AuthContext } from '../App';
 import API from '../api';
 import './Signup.css';
 
-const GOOGLE_CLIENT_ID = '633026567214-7r9ht0b8lilnsf61j2lefn7484o4d1vh.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || '633026567214-7r9ht0b8lilnsf61j2lefn7484o4d1vh.apps.googleusercontent.com';
 const ALLOWED_REGEX = /^[a-zA-Z0-9._%+\-]+@(gmail|hotmail)\.com$/;
 const OTP_COOLDOWN = 60;
 
