@@ -1,0 +1,34 @@
+.favorites-page { min-height: 80vh; }
+
+.favorites-hero {
+  background: linear-gradient(135deg, #c62828, #e53935, #ef5350);
+  padding: 50px 24px;
+  text-align: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+.favorites-hero::before {
+  content: '🤍';
+  position: absolute;
+  top: -50px; right: -50px;
+  font-size: 200px;
+  opacity: 0.1;
+  transform: rotate(20deg);
+}
+.favorites-hero h1 { 
+    font-size: 36px; 
+    font-weight: 900; 
+    margin-bottom: 8px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+.favorites-hero p  { font-size: 16px; color: #ffcdd2; }
+
+.favorites-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 30px 24px;
+}

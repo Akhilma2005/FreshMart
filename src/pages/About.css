@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap');
+
+.about-page { min-height: 80vh; overflow-x: hidden; background: #FDF8F0; }
+
+/* ── Hero ── */
+.about-hero {
+  background: linear-gradient(135deg, #0D2818 0%, #1B4332 55%, #2D6A4F 100%);
+  padding: 72px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 40px; flex-wrap: wrap; position: relative; overflow: hidden;
+}
+.about-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.about-hero-content { max-width: 600px; padding: 0 40px; position: relative; z-index: 1; }
+.about-hero-content h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(32px, 5vw, 50px); font-weight: 700;
+  color: #fff; margin-bottom: 16px; line-height: 1.2;
+}
+.about-hero-content h1 span { color: #74C69D; font-style: italic; }
+.about-hero-content p { font-size: 16px; color: rgba(255,255,255,0.78); line-height: 1.75; margin-bottom: 28px; }
+.about-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #E07B00; color: #fff;
+  padding: 14px 28px; border-radius: 10px;
+  font-size: 15px; font-weight: 700; transition: all 0.2s;
+  box-shadow: 0 4px 16px rgba(224,123,0,0.4);
+}
+.about-cta:hover { background: #c96d00; transform: translateY(-2px); }
+.about-cta.big { font-size: 17px; padding: 16px 36px; }
+.about-hero-emojis {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 16px; padding: 0 40px; position: relative; z-index: 1;
+}
+.about-emoji {
+  font-size: 48px; animation: floatAbout 3s ease-in-out infinite;
+  display: block; text-align: center;
+}
+@keyframes floatAbout { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+/* ── Stats ── */
+.about-stats {
+  display: grid; grid-template-columns: repeat(6, 1fr);
+  background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  border-bottom: 1px solid #ede8e0;
+}
+.stat-card {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 6px; padding: 28px 16px;
+  border-right: 1px solid #ede8e0; text-align: center;
+}
+.stat-card:last-child { border-right: none; }
+.stat-icon { font-size: 28px; }
+.stat-card strong { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: #1B4332; }
+.stat-card span:last-child { font-size: 12.5px; color: #999; font-weight: 500; }
+
+/* ── Story ── */
+.about-story {
+  max-width: 1300px; margin: 0 auto; padding: 64px 20px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+}
+.story-content h2 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; color: #1a1a1a; margin-bottom: 20px; }
+.story-content p { font-size: 15px; color: #666; line-height: 1.8; margin-bottom: 16px; }
+.story-visual { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.story-card {
+  background: #fff; border-radius: 14px; padding: 24px;
+  text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  border: 1px solid #ede8e0; transition: transform 0.2s;
+}
+.story-card:hover { transform: translateY(-4px); }
+.story-card span { font-size: 36px; }
+.story-card h3 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: #1B4332; margin: 8px 0 4px; }
+.story-card p { font-size: 13px; color: #999; }
+
+/* ── Values ── */
+.about-values { background: #fff; padding: 64px 20px; text-align: center; }
+.about-values h2 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; color: #1a1a1a; margin-bottom: 36px; }
+.values-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.value-card {
+  background: #FAF3E7; border-radius: 14px; padding: 32px 24px;
+  text-align: center; transition: all 0.25s; border: 1.5px solid transparent;
+}
+.value-card:hover { border-color: #2D6A4F; background: #fff; box-shadow: 0 6px 24px rgba(0,0,0,0.08); transform: translateY(-4px); }
+.value-icon { font-size: 44px; display: block; margin-bottom: 14px; }
+.value-card h3 { font-size: 17px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; }
+.value-card p { font-size: 13.5px; color: #777; line-height: 1.6; }
+
+/* ── Team ── */
+.about-team { max-width: 1300px; margin: 0 auto; padding: 64px 20px; text-align: center; }
+.about-team h2 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; color: #1a1a1a; margin-bottom: 36px; }
+.team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+.team-card {
+  background: #fff; border-radius: 16px; padding: 36px 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07); border: 1px solid #ede8e0;
+  transition: all 0.25s;
+}
+.team-card:hover { transform: translateY(-6px); box-shadow: 0 10px 32px rgba(0,0,0,0.1); }
+.team-avatar {
+  font-size: 56px; width: 90px; height: 90px; background: #FAF3E7;
+  border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; margin: 0 auto 16px;
+}
+.team-card h3 { font-size: 16px; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; }
+.team-card p { font-size: 13px; color: #2D6A4F; font-weight: 600; }
+
+/* ── CTA ── */
+.about-cta-section {
+  background: linear-gradient(135deg, #0D2818, #1B4332, #2D6A4F);
+  padding: 72px 20px; text-align: center;
+}
+.about-cta-section h2 { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 700; color: #fff; margin-bottom: 12px; }
+.about-cta-section p { font-size: 16px; color: rgba(255,255,255,0.75); margin-bottom: 28px; }
+
+/* ── Responsive ── */
+@media (max-width: 1100px) { .about-stats { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 900px) {
+  .about-story { grid-template-columns: 1fr; }
+  .values-grid { grid-template-columns: repeat(2, 1fr); }
+  .team-grid { grid-template-columns: repeat(2, 1fr); }
+  .about-hero { flex-direction: column; text-align: center; }
+  .about-hero-content { padding: 0 20px; }
+  .about-hero-emojis { padding: 0 20px; }
+}
+@media (max-width: 560px) {
+  .about-stats { grid-template-columns: repeat(2, 1fr); }
+  .values-grid { grid-template-columns: 1fr; }
+  .team-grid { grid-template-columns: 1fr 1fr; }
+  .story-visual { grid-template-columns: 1fr 1fr; }
+}

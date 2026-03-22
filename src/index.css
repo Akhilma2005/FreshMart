@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary:       #1a8a2e;
+  --primary-light: #22a83a;
+  --primary-dark:  #0f5c1e;
+  --accent:        #ff5722;
+  --accent2:       #ff9800;
+  --blue:          #1565c0;
+  --purple:        #6a1b9a;
+  --red:           #c62828;
+  --bg:            #f0f2f5;
+  --bg2:           #e8f5e9;
+  --white:         #ffffff;
+  --gray:          #f7f8fa;
+  --gray2:         #eef0f3;
+  --text:          #1a1a2e;
+  --text2:         #444;
+  --text-light:    #888;
+  --border:        #e2e5ea;
+  --shadow-sm:     0 2px 8px rgba(0,0,0,0.07);
+  --shadow:        0 4px 20px rgba(0,0,0,0.10);
+  --shadow-lg:     0 8px 32px rgba(0,0,0,0.15);
+  --shadow-xl:     0 16px 48px rgba(0,0,0,0.18);
+  --radius-xs:     6px;
+  --radius-sm:     10px;
+  --radius:        16px;
+  --radius-lg:     24px;
+  --radius-xl:     32px;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; border: none; outline: none; font-family: inherit; }
+img { max-width: 100%; display: block; }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #f0f0f0; }
+::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 10px; }
+
+/* ── Page transition progress bar ── */
+@keyframes navProgress {
+  from { width: 0%; opacity: 1; }
+  80%  { width: 90%; opacity: 1; }
+  to   { width: 100%; opacity: 0; }
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, #1a8a2e, #22a83a, #ff9800);
+  z-index: 9999;
+  pointer-events: none;
+}
+
+body.navigating::after {
+  animation: navProgress 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ── Smooth link & button interactions ── */
+a, button {
+  transition: opacity 0.18s ease, transform 0.18s ease, color 0.18s ease, background 0.18s ease;
+}
+
+/* ── Sticky back bar (reusable across pages) ── */
+.sticky-back-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(253, 248, 240, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(224, 216, 204, 0.6);
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sticky-back-bar button,
+.sticky-back-bar a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #1B4332;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-family: inherit;
+  transition: background 0.18s;
+}
+.sticky-back-bar button:hover,
+.sticky-back-bar a:hover { background: rgba(27,67,50,0.08); }
