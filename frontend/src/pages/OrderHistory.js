@@ -5,7 +5,8 @@ import { FiPackage, FiChevronDown, FiChevronUp, FiShoppingBag, FiArrowLeft } fro
 import API from '../api';
 import './OrderHistory.css';
 
-const imgSrc = (img) => !img ? '' : img.startsWith('http') ? img : `http://localhost:5000${img}`;
+const BASE_URL = (process.env.REACT_APP_API_URL || 'http://localhost:5000/api').replace('/api', '');
+const imgSrc = (img) => !img ? '' : img.startsWith('http') ? img : `${BASE_URL}${img}`;
 
 export default function OrderHistory() {
   const { auth } = useContext(AuthContext);

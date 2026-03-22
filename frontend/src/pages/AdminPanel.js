@@ -5,7 +5,8 @@ import { FiCheck, FiX, FiPackage, FiClock, FiAlertCircle, FiUser, FiTag, FiPlus,
 import API from '../api';
 import './AdminPanel.css';
 
-const imgUrl = (src) => !src ? '' : src.startsWith('http') ? src : `http://localhost:5000${src}`;
+const BASE_URL = (process.env.REACT_APP_API_URL || 'http://localhost:5000/api').replace('/api', '');
+const imgUrl = (src) => !src ? '' : src.startsWith('http') ? src : `${BASE_URL}${src}`;
 
 export default function AdminPanel() {
   const { auth, authLoading } = useContext(AuthContext);
@@ -398,7 +399,7 @@ export default function AdminPanel() {
                     <div className="adm-user-row" onClick={() => setExpandedUser(expandedUser === u._id ? null : u._id)}>
                       <div className="adm-user-avatar">
                         {u.avatar
-                          ? <img src={u.avatar.startsWith('http') ? u.avatar : `http://localhost:5000${u.avatar}`} alt={u.name} onError={e => e.target.style.display='none'} />
+                          ? <img src={u.avatar.startsWith('http') ? u.avatar : `${BASE_URL}${u.avatar}`} alt={u.name} onError={e => e.target.style.display='none'} />
                           : <span>{u.name?.[0]?.toUpperCase() || '?'}</span>}
                       </div>
                       <div className="adm-user-info">

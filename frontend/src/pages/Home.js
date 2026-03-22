@@ -75,7 +75,7 @@ export default function Home() {
       .then(r => r.ok ? r.json() : [])
       .then(data => setProducts(data.map(p => {
         let img = p.image;
-        if (img && img.startsWith('/uploads/')) img = `http://localhost:5000${img}`;
+        if (img && img.startsWith('/uploads/')) img = `${(process.env.REACT_APP_API_URL || 'http://localhost:5000/api').replace('/api', '')}${img}`;
         return { ...p, image: img };
       })))
       .catch(() => {});
@@ -180,7 +180,7 @@ export default function Home() {
             <Link to={`/products?cat=${encodeURIComponent(cat.name)}`} key={`cat-${cat._id || cat.id}-${i}`} className="hk-cat-card">
               <div className="hk-cat-circle" style={{ background: cat.bg }}>
                 {cat.image
-                  ? <img src={cat.image.startsWith('http') ? cat.image : `http://localhost:5000${cat.image}`} alt={cat.name}
+                  ? <img src={cat.image.startsWith('http') ? cat.image : `${(process.env.REACT_APP_API_URL || 'http://localhost:5000/api').replace('/api', '')}${cat.image}`} alt={cat.name}
                       style={{ width:'100%', height:'100%', objectFit:'cover', borderRadius:'50%' }}
                       onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='block'; }} />
                   : null}

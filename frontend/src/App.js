@@ -29,7 +29,10 @@ export const FavoritesContext = React.createContext();
 export const AuthContext = React.createContext();
 export const SocketContext = React.createContext();
 
-const socket = io('http://localhost:5000', { autoConnect: true });
+const SOCKET_URL = process.env.REACT_APP_API_URL
+  ? process.env.REACT_APP_API_URL.replace('/api', '')
+  : 'http://localhost:5000';
+const socket = io(SOCKET_URL, { autoConnect: true });
 
 function ScrollToTop() {
   const { pathname, search } = useLocation();

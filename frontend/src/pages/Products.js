@@ -38,7 +38,7 @@ export default function Products() {
         const data = await res.json();
         const merged = data.map(p => {
           let img = p.image || null;
-          if (img && img.startsWith('/uploads/')) img = `http://localhost:5000${img}`;
+          if (img && img.startsWith('/uploads/')) img = `${(process.env.REACT_APP_API_URL || 'http://localhost:5000/api').replace('/api', '')}${img}`;
           return { ...p, image: img };
         });
         setProducts(merged);

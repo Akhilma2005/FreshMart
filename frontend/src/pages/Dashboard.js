@@ -29,8 +29,11 @@ const TABS = [
 const ROLES    = ['buyer', 'vendor', 'admin'];
 const STATUSES = ['active', 'out'];
 
+const BASE_URL = (process.env.REACT_APP_API_URL || 'http://localhost:5000/api').replace('/api', '');
+const imgUrl = (src) => !src ? '' : src.startsWith('http') ? src : `${BASE_URL}${src}`;
+
 function ApprovalCard({ p, onAction }) {
-  const imgSrc = p.image ? (p.image.startsWith('http') ? p.image : `http://localhost:5000${p.image}`) : '';
+  const imgSrc = p.image ? (p.image.startsWith('http') ? p.image : `${BASE_URL}${p.image}`) : '';
   return (
     <div className="ad-approval-card">
       <div className="ad-approval-img">
@@ -808,7 +811,7 @@ export default function Dashboard() {
                         <div className="ad-td-name">
                           <div className="ad-avatar">
                             {v.shop?.avatar
-                              ? <img src={v.shop.avatar.startsWith('http') ? v.shop.avatar : `http://localhost:5000${v.shop.avatar}`} alt="" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'50%'}} />
+                              ? <img src={v.shop.avatar.startsWith('http') ? v.shop.avatar : `${BASE_URL}${v.shop.avatar}`} alt="" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'50%'}} />
                               : v.name?.[0]?.toUpperCase()}
                           </div>
                           <div>
@@ -856,8 +859,8 @@ export default function Dashboard() {
                   <div className="ad-shop-avatar-wrap">
                     {(() => {
                       const src = isEditing
-                        ? (shopAvatarPreview || (editShop.avatar ? (editShop.avatar.startsWith('http') ? editShop.avatar : `http://localhost:5000${editShop.avatar}`) : null))
-                        : (s.avatar ? (s.avatar.startsWith('http') ? s.avatar : `http://localhost:5000${s.avatar}`) : null);
+                        ? (shopAvatarPreview || (editShop.avatar ? (editShop.avatar.startsWith('http') ? editShop.avatar : `${BASE_URL}${editShop.avatar}`) : null))
+                        : (s.avatar ? (s.avatar.startsWith('http') ? s.avatar : `${BASE_URL}${s.avatar}`) : null);
                       return src
                         ? <img src={src} alt="" className="ad-shop-avatar-img" />
                         : <div className="ad-shop-avatar-placeholder">{s.shopName?.[0]?.toUpperCase()}</div>;
@@ -1041,7 +1044,7 @@ export default function Dashboard() {
                         <span>Image</span>
                         <label className="ad-dp-img-upload-box">
                           {editDpImagePreview || editDp.image
-                            ? <img src={editDpImagePreview || (editDp.image?.startsWith('http') ? editDp.image : `http://localhost:5000${editDp.image}`)} alt="preview" className="ad-dp-img-preview" />
+                            ? <img src={editDpImagePreview || (editDp.image?.startsWith('http') ? editDp.image : `${BASE_URL}${editDp.image}`)} alt="preview" className="ad-dp-img-preview" />
                             : <span className="ad-dp-img-placeholder-text">📷 Click to upload</span>}
                           <input type="file" accept="image/*" style={{display:'none'}}
                             onChange={e => { const f = e.target.files[0]; if (!f) return; setEditDpImageFile(f); setEditDpImagePreview(URL.createObjectURL(f)); }} />
@@ -1057,7 +1060,7 @@ export default function Dashboard() {
                     <>
                       <div className="ad-dp-img-wrap">
                         <img
-                          src={p.image ? (p.image.startsWith('http') ? p.image : `http://localhost:5000${p.image}`) : ''}
+                          src={p.image ? (p.image.startsWith('http') ? p.image : `${BASE_URL}${p.image}`) : ''}
                           alt={p.name}
                           className="ad-dp-img"
                           onError={e => { e.target.style.display='none'; e.target.parentNode.querySelector('.ad-dp-emoji').style.display='flex'; }}
@@ -1169,7 +1172,7 @@ export default function Dashboard() {
                     <div className="ad-fc-edit-body">
                       <label className="ad-fc-img-upload">
                         {editFcPrev || cat.image
-                          ? <img src={editFcPrev || (cat.image.startsWith('http') ? cat.image : `http://localhost:5000${cat.image}`)} alt="" className="ad-fc-img-thumb" />
+                          ? <img src={editFcPrev || (cat.image.startsWith('http') ? cat.image : `${BASE_URL}${cat.image}`)} alt="" className="ad-fc-img-thumb" />
                           : <div className="ad-fc-img-placeholder"><span>📷</span><small>Upload</small></div>}
                         <input ref={editFcImgRef} type="file" accept="image/*" style={{ display:'none' }}
                           onChange={e => { const f = e.target.files[0]; if (!f) return; setEditFcImg(f); setEditFcPrev(URL.createObjectURL(f)); }} />
@@ -1201,7 +1204,7 @@ export default function Dashboard() {
                     <>
                       <div className="ad-fc-card-top" style={{ background: cat.bg }}>
                         {cat.image
-                          ? <img src={cat.image.startsWith('http') ? cat.image : `http://localhost:5000${cat.image}`} alt={cat.name} className="ad-fc-card-img"
+                          ? <img src={cat.image.startsWith('http') ? cat.image : `${BASE_URL}${cat.image}`} alt={cat.name} className="ad-fc-card-img"
                               onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }} />
                           : null}
                         <div className="ad-fc-card-icon" style={{ color: cat.color, display: cat.image ? 'none' : 'flex' }}>{cat.icon}</div>
@@ -1497,7 +1500,7 @@ export default function Dashboard() {
                       <div className="ad-approval-card" key={p._id} style={{opacity:0.85}}>
                         <div className="ad-approval-img">
                           {p.image
-                            ? <img src={p.image.startsWith('http') ? p.image : `http://localhost:5000${p.image}`} alt={p.name} onError={e=>{e.target.style.display='none';e.target.nextSibling.style.display='flex';}} />
+                            ? <img src={p.image.startsWith('http') ? p.image : `${BASE_URL}${p.image}`} alt={p.name} onError={e=>{e.target.style.display='none';e.target.nextSibling.style.display='flex';}} />
                             : null}
                           <span style={{display:p.image?'none':'flex',fontSize:36}}>{p.emoji||'🛒'}</span>
                         </div>
@@ -1522,7 +1525,7 @@ export default function Dashboard() {
                       <div className="ad-approval-card" key={p._id} style={{opacity:0.85}}>
                         <div className="ad-approval-img">
                           {p.image
-                            ? <img src={p.image.startsWith('http') ? p.image : `http://localhost:5000${p.image}`} alt={p.name} onError={e=>{e.target.style.display='none';e.target.nextSibling.style.display='flex';}} />
+                            ? <img src={p.image.startsWith('http') ? p.image : `${BASE_URL}${p.image}`} alt={p.name} onError={e=>{e.target.style.display='none';e.target.nextSibling.style.display='flex';}} />
                             : null}
                           <span style={{display:p.image?'none':'flex',fontSize:36}}>{p.emoji||'🛒'}</span>
                         </div>
@@ -1622,7 +1625,7 @@ export default function Dashboard() {
                     ) : (
                       <>
                         {cat.image
-                          ? <img src={`http://localhost:5000${cat.image}`} alt={cat.name} className="ad-cat-header-img" />
+                          ? <img src={`${BASE_URL}${cat.image}`} alt={cat.name} className="ad-cat-header-img" />
                           : <span className="ad-cat-emoji">{cat.emoji}</span>}
                         <strong>{cat.name}</strong>
                         <span className="ad-cat-count">{cat.items.length}</span>
@@ -1639,7 +1642,7 @@ export default function Dashboard() {
                         {editItem?.itemId === item.id ? (
                           <>
                             {item.image
-                              ? <img src={`http://localhost:5000${item.image}`} alt={item.name} className="ad-item-img" />
+                              ? <img src={`${BASE_URL}${item.image}`} alt={item.name} className="ad-item-img" />
                               : <div className="ad-item-img-placeholder">{cat.emoji}</div>}
                             <input className="ad-inline-input" style={{flex:1, minWidth:60, fontSize:12, padding:'3px 7px'}} value={editItem.name}
                               onChange={e => setEditItem(v => ({...v, name: e.target.value}))}
@@ -1653,7 +1656,7 @@ export default function Dashboard() {
                         ) : (
                           <>
                             {item.image
-                              ? <img src={`http://localhost:5000${item.image}`} alt={item.name} className="ad-item-img" />
+                              ? <img src={`${BASE_URL}${item.image}`} alt={item.name} className="ad-item-img" />
                               : <div className="ad-item-img-placeholder">{cat.emoji}</div>}
                             <span className="ad-item-name">{item.name}</span>
                             <span className="ad-item-unit">{item.unit}</span>

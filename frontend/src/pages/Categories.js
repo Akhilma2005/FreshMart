@@ -17,7 +17,7 @@ export default function Categories() {
       .then(r => r.ok ? r.json() : [])
       .then(data => setApiProducts(data.map(p => {
         let img = p.image;
-        if (img && img.startsWith('/uploads/')) img = `http://localhost:5000${img}`;
+        if (img && img.startsWith('/uploads/')) img = `${(process.env.REACT_APP_API_URL || 'http://localhost:5000/api').replace('/api', '')}${img}`;
         return { ...p, image: img };
       })))
       .catch(() => {});
@@ -49,7 +49,7 @@ export default function Categories() {
               <button key={key} className="cat-icon-btn" onClick={() => handleCatClick(key)}>
                 <div className="cat-icon-circle" style={{ background: cat.bg, borderColor: cat.color }}>
                   {cat.image
-                    ? <img src={cat.image.startsWith('http') ? cat.image : `http://localhost:5000${cat.image}`}
+                    ? <img src={cat.image.startsWith('http') ? cat.image : `${(process.env.REACT_APP_API_URL || 'http://localhost:5000/api').replace('/api', '')}${cat.image}`}
                         alt={cat.name}
                         onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='block'; }} />
                     : null}

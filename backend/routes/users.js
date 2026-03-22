@@ -7,6 +7,18 @@ const upload = makeUpload('avatars');
 
 const PROFILE_FIELDS = ['name', 'phone', 'gender', 'dob', 'bio', 'address', 'city', 'state', 'pincode', 'country', 'locationLabel', 'lat', 'lng'];
 
+// PATCH /api/users/:id/avatar
+router.patch('/:id/avatar', authMiddleware, upload.single('avatar'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+    const avatarUrl = req.file.path;
+    await User.findByIdAndUpdate(req.params.id, { avatar: avatarUrl });
+    res.json({ avatarUrl });
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+});
+
 // GET /api/users/:id
 router.get('/:id', authMiddleware, async (req, res) => {
   const user = await User.findById(req.params.id, '-password');

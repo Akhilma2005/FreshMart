@@ -56,7 +56,7 @@ export default function ProductDetail() {
       .then(r => r.json())
       .then(data => {
         if (data && !data.message) {
-          if (data.image?.startsWith('/uploads/')) data.image = `http://localhost:5000${data.image}`;
+          if (data.image?.startsWith('/uploads/')) data.image = `${(process.env.REACT_APP_API_URL || 'http://localhost:5000/api').replace('/api', '')}${data.image}`;
           setProduct(data);
           if (isWeightUnit(data.unit)) {
             const u = data.unit?.toLowerCase().replace(/\s/g, '');
@@ -480,7 +480,7 @@ export default function ProductDetail() {
                   <div className="review-head" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
                     <div className="review-author" style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                       {r.userAvatar ? (
-                        <img src={`http://localhost:5000${r.userAvatar}`} alt="" style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }} onError={(e) => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }} />
+                        <img src={`${(process.env.REACT_APP_API_URL || 'http://localhost:5000/api').replace('/api', '')}${r.userAvatar}`} alt="" style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }} onError={(e) => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }} />
                       ) : null}
                       <div className="review-avatar" style={{ width: 40, height: 40, background: 'var(--green-100)', color: 'var(--green-800)', borderRadius: '50%', display: r.userAvatar ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, flexShrink: 0 }}>{r.userName?.charAt(0) || 'U'}</div>
                       <div>

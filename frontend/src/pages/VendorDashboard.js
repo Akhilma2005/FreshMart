@@ -16,7 +16,8 @@ const EMPTY_PRODUCT = { name: '', category: 'Vegetables', price: '', stock: '', 
 const EMPTY_SHOP = { shopName: '', tagline: '', phone: '', email: '', website: '', description: '', address: '', city: '', state: '', pincode: '' };
 const EMPTY_PAYMENT = { upiId: '', accountHolder: '', bankName: '', accountNumber: '', confirmAccountNumber: '', ifsc: '', accountType: 'savings' };
 
-const imgUrl = (src) => !src ? '' : src.startsWith('http') ? src : `http://localhost:5000${src}`;
+const BASE_URL = (process.env.REACT_APP_API_URL || 'http://localhost:5000/api').replace('/api', '');
+const imgUrl = (src) => !src ? '' : src.startsWith('http') ? src : `${BASE_URL}${src}`;
 
 export default function VendorDashboard() {
   const { auth, authLoading, logout } = useContext(AuthContext);
@@ -153,7 +154,7 @@ export default function VendorDashboard() {
 
   useEffect(() => {
     if (!user?.id) return;
-    const socket = io('http://localhost:5000', { transports: ['websocket'] });
+    const socket = io(BASE_URL, { transports: ['websocket'] });
     socketRef.current = socket;
     socket.emit('join:vendor', user.id);
 
@@ -864,7 +865,7 @@ export default function VendorDashboard() {
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 12, paddingTop: 12, borderTop: '1px solid #f8f9fa' }}>
                         {r.userAvatar ? (
-                          <img src={`http://localhost:5000${r.userAvatar}`} alt="" style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover' }} />
+                          <img src={`${BASE_URL}${r.userAvatar}`} alt="" style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover' }} />
                         ) : (
                           <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--green-100)', color: 'var(--green-800)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700 }}>
                             {r.userName?.charAt(0) || 'U'}

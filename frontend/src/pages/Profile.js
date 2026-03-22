@@ -7,6 +7,7 @@ import {
   FiCheck, FiX, FiAlertTriangle, FiPackage, FiSettings,
   FiSave, FiCalendar, FiHome, FiGlobe
 } from 'react-icons/fi';
+import API from '../api';
 import './Profile.css';
 
 export default function Profile() {
@@ -42,7 +43,7 @@ export default function Profile() {
 
   useEffect(() => {
     if (!user?.id) return;
-    fetch(`http://localhost:5000/api/users/${user.id}`, {
+    fetch(`${API}/users/${user.id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(r => r.ok ? r.json() : null)
@@ -82,7 +83,7 @@ export default function Profile() {
   useEffect(() => {
     if (!auth || activeTab !== 'activity') return;
     setOrdersLoading(true);
-    fetch(`http://localhost:5000/api/orders?userId=${user.id}`, {
+    fetch(`${API}/orders?userId=${user.id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(r => r.ok ? r.json() : [])
@@ -105,7 +106,7 @@ export default function Profile() {
     const form = new FormData();
     form.append('avatar', file);
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${user.id}/avatar`, {
+      const res = await fetch(`${API}/users/${user.id}/avatar`, {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },
         body: form,
@@ -137,7 +138,7 @@ export default function Profile() {
     if (!form.name.trim()) { showToast('error', 'Name cannot be empty.'); return; }
     setSaving(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${user.id}`, {
+      const res = await fetch(`${API}/users/${user.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
@@ -175,7 +176,7 @@ export default function Profile() {
     if (saving) return;
     setSaving(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${user.id}`, {
+      const res = await fetch(`${API}/users/${user.id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
