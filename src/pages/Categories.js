@@ -4,8 +4,7 @@ import { SocketContext } from '../App';
 import { FiArrowRight } from 'react-icons/fi';
 import MiniCard from '../components/MiniCard';
 import useFrontCategories from '../hooks/useFrontCategories';
-import API from '../api';
-import './Categories.css';
+import API, { imgUrl } from '../api';
 
 export default function Categories() {
   const socket = useContext(SocketContext);
@@ -17,7 +16,7 @@ export default function Categories() {
       .then(r => r.ok ? r.json() : [])
       .then(data => setApiProducts(data.map(p => {
         let img = p.image;
-        if (img && img.startsWith('/uploads/')) img = `http://localhost:5000${img}`;
+        if (img && img.startsWith('/uploads/')) img = imgUrl(img);
         return { ...p, image: img };
       })))
       .catch(() => {});
@@ -49,7 +48,7 @@ export default function Categories() {
               <button key={key} className="cat-icon-btn" onClick={() => handleCatClick(key)}>
                 <div className="cat-icon-circle" style={{ background: cat.bg, borderColor: cat.color }}>
                   {cat.image
-                    ? <img src={cat.image.startsWith('http') ? cat.image : `http://localhost:5000${cat.image}`}
+                    ? <img src={imgUrl(cat.image)}
                         alt={cat.name}
                         onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='block'; }} />
                     : null}

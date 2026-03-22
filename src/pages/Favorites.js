@@ -3,8 +3,7 @@ import { FavoritesContext, AuthContext, SocketContext } from '../App';
 import MiniCard from '../components/MiniCard';
 import { FiHeart, FiArrowLeft } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
-import API from '../api';
-import './Favorites.css';
+import API, { imgUrl } from '../api';
 
 export default function Favorites() {
   const { favorites } = useContext(FavoritesContext);
@@ -18,7 +17,7 @@ export default function Favorites() {
       .then(r => r.ok ? r.json() : [])
       .then(data => setAllProducts(data.map(p => {
         let img = p.image;
-        if (img && img.startsWith('/uploads/')) img = `http://localhost:5000${img}`;
+        if (img && img.startsWith('/uploads/')) img = imgUrl(img);
         return { ...p, image: img };
       })))
       .catch(() => {});

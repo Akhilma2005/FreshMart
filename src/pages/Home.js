@@ -4,8 +4,7 @@ import { CartContext, SocketContext } from '../App';
 import { FiZap } from 'react-icons/fi';
 import MiniCard from '../components/MiniCard';
 import useFrontCategories from '../hooks/useFrontCategories';
-import API from '../api';
-import './Home.css';
+import API, { imgUrl } from '../api';
 
 function useCountdown() {
   const [time, setTime] = useState({ h: 8, m: 45, s: 30 });
@@ -75,19 +74,7 @@ export default function Home() {
       .then(r => r.ok ? r.json() : [])
       .then(data => setProducts(data.map(p => {
         let img = p.image;
-        if (img && img.startsWith('/uploads/')) img = `http://localhost:5000${img}`;
-        return { ...p, image: img };
-      })))
-      .catch(() => {});
-  };
-
-  useEffect(() => {
-    fetchProducts();
-    socket.on('products:updated', fetchProducts);
-    return () => socket.off('products:updated', fetchProducts);
-  }, []); // eslint-disable-line
-
-  // Seller products first, then default — for all sections
+        if (img && img.startsWith('/uploads/')) img = imgUrl(img);
   const sellerProducts = products.filter(p => p.isVendorProduct);
   const allSorted = [...sellerProducts, ...products.filter(p => !p.isVendorProduct)];
 
@@ -180,7 +167,7 @@ export default function Home() {
             <Link to={`/products?cat=${encodeURIComponent(cat.name)}`} key={`cat-${cat._id || cat.id}-${i}`} className="hk-cat-card">
               <div className="hk-cat-circle" style={{ background: cat.bg }}>
                 {cat.image
-                  ? <img src={cat.image.startsWith('http') ? cat.image : `http://localhost:5000${cat.image}`} alt={cat.name}
+                  ? <img src={imgUrl(cat.image)} alt={cat.name}
                       style={{ width:'100%', height:'100%', objectFit:'cover', borderRadius:'50%' }}
                       onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='block'; }} />
                   : null}

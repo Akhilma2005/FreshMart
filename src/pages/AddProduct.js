@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../App';
-import API from '../api';
+import API, { imgUrl } from '../api';
 import {
   FiArrowLeft, FiCheck, FiPackage, FiTag, FiChevronRight,
   FiShoppingBag, FiSearch, FiPlus, FiUpload, FiClock, FiX
@@ -10,7 +10,6 @@ import './AddProduct.css';
 
 const CATALOG_STEPS = ['Choose Category', 'Choose Item', 'Product Details'];
 const CUSTOM_STEPS  = ['New Category / Item', 'Product Details'];
-const imgUrl = (src) => src?.startsWith('http') ? src : src ? `http://localhost:5000${src}` : '';
 
 export default function AddProduct() {
   const { auth, authLoading } = useContext(AuthContext);
@@ -471,7 +470,7 @@ function ProductDetailsForm({ form, setForm, discountPct, selectedItem, selected
         <div className="ap-preview-card">
           <div className="ap-preview-badge">{isPending ? '⏳ Pending Approval' : 'Live Preview'}</div>
           <div className="ap-preview-img-wrap">
-            <img src={selectedItem.image?.startsWith('blob:') ? selectedItem.image : (selectedItem.image?.startsWith('http') ? selectedItem.image : selectedItem.image ? `http://localhost:5000${selectedItem.image}` : '')} alt={selectedItem.name} onError={e => e.target.style.display='none'} />
+            <img src={selectedItem.image?.startsWith('blob:') ? selectedItem.image : imgUrl(selectedItem.image)} alt={selectedItem.name} onError={e => e.target.style.display='none'} />
           </div>
           <div className="ap-preview-body">
             <span className="ap-preview-cat" style={{ background: selectedCat.bg, color: selectedCat.color }}>

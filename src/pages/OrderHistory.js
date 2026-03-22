@@ -2,10 +2,9 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../App';
 import { FiPackage, FiChevronDown, FiChevronUp, FiShoppingBag, FiArrowLeft } from 'react-icons/fi';
-import API from '../api';
-import './OrderHistory.css';
+import API, { imgUrl } from '../api';
 
-const imgSrc = (img) => !img ? '' : img.startsWith('http') ? img : `http://localhost:5000${img}`;
+const imgSrc = (img) => imgUrl(img);
 
 export default function OrderHistory() {
   const { auth } = useContext(AuthContext);
