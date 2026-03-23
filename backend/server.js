@@ -80,12 +80,6 @@ io.on('connection', (socket) => {
   });
 });
 
-// Self-ping every 14 minutes to prevent Render free tier from sleeping
-const BACKEND_URL = process.env.BACKEND_URL || 'https://freshmart-1-z1ib.onrender.com';
-setInterval(() => {
-  fetch(`${BACKEND_URL}/ping`).catch(() => {});
-}, 14 * 60 * 1000);
-
 connectDB().then(async () => {
   // One-time migration: unset approvalStatus from catalog products (isCustom: false/null)
   const VendorProduct = require('./models/VendorProduct');
