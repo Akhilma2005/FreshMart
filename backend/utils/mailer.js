@@ -1,25 +1,17 @@
-const nodemailer = require('nodemailer');
-
-const transporter = nodemailer.createTransport({
-  host: 'smtp-relay.brevo.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.BREVO_USER,
-    pass: process.env.BREVO_PASS,
-  },
-});
+const { Resend } = require('resend');
 
 module.exports = {
   sendMail: async ({ to, subject, html }) => {
-    if (!process.env.BREVO_USER || !process.env.BREVO_PASS) {
-      throw new Error('BREVO_USER and BREVO_PASS env vars are not set.');
-    }
-    await transporter.sendMail({
-      from: '"FreshMart" <maakhil432005@gmail.com>',
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) throw new Error('RESEND_API_KEY env var is not set on the server.');
+    const resend = new Resend(apiKey);
+    const { data, error } = await resend.emails.send({
+      from: 'FreshMart <onboarding@resend.dev>',
       to,
       subject,
       html,
     });
+    if (error) throw new Error(error.message);
+    return data;
   },
 };
