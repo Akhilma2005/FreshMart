@@ -57,7 +57,7 @@ router.post('/send-otp', async (req, res) => {
     res.json({ message: 'OTP sent successfully.' });
   } catch (err) {
     console.error('Mailer error:', err.message);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: 'Failed to send OTP. Please try again.' });
   }
 });
 
@@ -190,7 +190,7 @@ router.post('/forgot-password', async (req, res) => {
     res.json({ message: 'Verification code sent to your email.' });
   } catch (err) {
     console.error('Mailer error:', err.message);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: 'Failed to send email. Please try again.' });
   }
 });
 
