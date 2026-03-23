@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiMail, FiShield, FiLock, FiCheck, FiArrowLeft, FiRefreshCw } from 'react-icons/fi';
-import API from '../api';
+import API, { fetchWithTimeout } from '../api';
 import './ForgotPassword.css';
 
 const OTP_COOLDOWN = 60;
@@ -35,7 +35,7 @@ export default function ForgotPassword() {
     if (!email.trim()) return setError('Please enter your email.');
     setError(''); setLoading(true);
     try {
-      const res = await fetch(`${API}/auth/forgot-password`, {
+      const res = await fetchWithTimeout(`${API}/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim() }),
@@ -45,8 +45,8 @@ export default function ForgotPassword() {
       setStep(1);
       setCooldown(OTP_COOLDOWN);
       setTimeout(() => otpRef.current?.focus(), 100);
-    } catch {
-      setError('Server error. Make sure backend is running.');
+    } catch (err) {
+      setError(err.message || 'Server error. Make sure backend is running.');
     } finally {
       setLoading(false);
     }
@@ -55,7 +55,7 @@ export default function ForgotPassword() {
   const resendCode = async () => {
     setError(''); setLoading(true);
     try {
-      const res = await fetch(`${API}/auth/forgot-password`, {
+      const res = await fetchWithTimeout(`${API}/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim() }),
@@ -64,8 +64,8 @@ export default function ForgotPassword() {
       if (!res.ok) return setError(data.message || 'Failed to resend.');
       setCooldown(OTP_COOLDOWN);
       setOtp('');
-    } catch {
-      setError('Server error.');
+    } catch (err) {
+      setError(err.message || 'Server error.');
     } finally {
       setLoading(false);
     }
@@ -75,7 +75,7 @@ export default function ForgotPassword() {
     if (otp.length < 6) return setError('Enter the complete 6-digit code.');
     setError(''); setLoading(true);
     try {
-      const res = await fetch(`${API}/auth/verify-reset-otp`, {
+      const res = await fetchWithTimeout(`${API}/auth/verify-reset-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim(), otp }),
@@ -83,8 +83,8 @@ export default function ForgotPassword() {
       const data = await res.json();
       if (!res.ok) return setError(data.message || 'Invalid code.');
       setStep(2);
-    } catch {
-      setError('Server error.');
+    } catch (err) {
+      setError(err.message || 'Server error.');
     } finally {
       setLoading(false);
     }

@@ -11,13 +11,15 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: (origin, cb) => {
-      const allowed = [
-        'http://localhost:3000',
-        'http://localhost:3001',
-        process.env.FRONTEND_URL,
-        process.env.ADMIN_URL,
-      ].filter(Boolean);
-      if (!origin || allowed.includes(origin)) return cb(null, true);
+      if (!origin) return cb(null, true);
+      if (
+        origin.includes('localhost') ||
+        origin.endsWith('.vercel.app') ||
+        origin.endsWith('.onrender.com') ||
+        origin.endsWith('.netlify.app') ||
+        origin === process.env.FRONTEND_URL ||
+        origin === process.env.ADMIN_URL
+      ) return cb(null, true);
       cb(new Error('Not allowed by CORS'));
     },
     credentials: true,
@@ -32,14 +34,22 @@ const port = process.env.PORT || 5000;
 const ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'http://localhost:3001',
-  'https://fresh-mart-sigma.vercel.app',
   process.env.FRONTEND_URL,
   process.env.ADMIN_URL,
 ].filter(Boolean);
 
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin || ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+    // Allow requests with no origin (mobile apps, curl, Postman)
+    if (!origin) return cb(null, true);
+    // Allow if explicitly listed
+    if (ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+    // Allow any Vercel, Render, or Netlify preview/production URL
+    if (
+      origin.endsWith('.vercel.app') ||
+      origin.endsWith('.onrender.com') ||
+      origin.endsWith('.netlify.app')
+    ) return cb(null, true);
     cb(new Error('Not allowed by CORS'));
   },
   credentials: true,
@@ -50,6 +60,9 @@ app.use('/admin', express.static(path.join(__dirname, '..', 'admin', 'build')));
 app.get('/admin/*path', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'admin', 'build', 'index.html'));
 });
+
+// Keep-alive ping for Render free tier
+app.get('/ping', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/products', require('./routes/products'));
@@ -66,6 +79,12 @@ io.on('connection', (socket) => {
     socket.join(`vendor:${vendorId}`);
   });
 });
+
+// Self-ping every 14 minutes to prevent Render free tier from sleeping
+const BACKEND_URL = process.env.BACKEND_URL || 'https://freshmart-1-z1ib.onrender.com';
+setInterval(() => {
+  fetch(`${BACKEND_URL}/ping`).catch(() => {});
+}, 14 * 60 * 1000);
 
 connectDB().then(async () => {
   // One-time migration: unset approvalStatus from catalog products (isCustom: false/null)

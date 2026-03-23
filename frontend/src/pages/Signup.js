@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext, useCallback } from 'rea
 import { Link, useNavigate } from 'react-router-dom';
 import { FiUser, FiMail, FiLock, FiUserPlus, FiShoppingBag, FiShoppingCart, FiShield, FiRefreshCw } from 'react-icons/fi';
 import { AuthContext } from '../App';
-import API from '../api';
+import API, { fetchWithTimeout } from '../api';
 import './Signup.css';
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || '633026567214-7r9ht0b8lilnsf61j2lefn7484o4d1vh.apps.googleusercontent.com';
@@ -130,7 +130,7 @@ export default function Signup() {
   const sendOtp = async () => {
     setOtpLoading(true); setOtpError(''); setOtpSuccess('');
     try {
-      const res = await fetch(`${API}/auth/send-otp`, {
+      const res = await fetchWithTimeout(`${API}/auth/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim() }),
@@ -145,8 +145,8 @@ export default function Signup() {
       setOtpSuccess(`OTP sent to ${email.trim()}`);
       setCooldown(OTP_COOLDOWN);
       setTimeout(() => otpInputRef.current?.focus(), 100);
-    } catch {
-      setOtpError('Server error. Make sure backend is running.');
+    } catch (err) {
+      setOtpError(err.message || 'Server error. Make sure backend is running.');
     } finally {
       setOtpLoading(false);
     }
@@ -157,7 +157,7 @@ export default function Signup() {
     if (code.length < 6) return setOtpError('Enter the complete 6-digit OTP.');
     setOtpLoading(true); setOtpError('');
     try {
-      const res = await fetch(`${API}/auth/verify-otp`, {
+      const res = await fetchWithTimeout(`${API}/auth/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim(), otp: code }),
@@ -166,8 +166,8 @@ export default function Signup() {
       if (!res.ok) return setOtpError(data.message || 'Invalid OTP.');
       setOtpVerified(true);
       setOtpSuccess('✅ Email verified successfully!');
-    } catch {
-      setOtpError('Server error.');
+    } catch (err) {
+      setOtpError(err.message || 'Server error.');
     } finally {
       setOtpLoading(false);
     }
