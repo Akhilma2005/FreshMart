@@ -4,5 +4,8 @@ const SERVICE_ID  = 'service_4ij8jfn';
 const TEMPLATE_ID = 'template_lhvikdf';
 const PUBLIC_KEY  = 'IEFD7tVDSCValq0E_';
 
-export const sendOTPEmail = (toEmail, otp) =>
-  emailjs.send(SERVICE_ID, TEMPLATE_ID, { email: toEmail, passcode: otp }, PUBLIC_KEY);
+export const sendOTPEmail = async (toEmail, otp) => {
+  const result = await emailjs.send(SERVICE_ID, TEMPLATE_ID, { email: toEmail, passcode: otp }, PUBLIC_KEY);
+  console.log('EmailJS result:', result);
+  return result;
+};
