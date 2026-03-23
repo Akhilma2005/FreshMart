@@ -19,6 +19,7 @@ export default function ForgotPassword() {
   const [confirmPwd, setConfirmPwd]   = useState('');
   const [error, setError]             = useState('');
   const [loading, setLoading]         = useState(false);
+  const [waking, setWaking]           = useState(false);
   const [cooldown, setCooldown]       = useState(0);
 
   const otpRef   = useRef(null);
@@ -33,7 +34,8 @@ export default function ForgotPassword() {
 
   const sendCode = async () => {
     if (!email.trim()) return setError('Please enter your email.');
-    setError(''); setLoading(true);
+    setError(''); setLoading(true); setWaking(false);
+    const wakingTimer = setTimeout(() => setWaking(true), 5000);
     try {
       const res = await fetchWithTimeout(`${API}/auth/forgot-password`, {
         method: 'POST',
@@ -48,7 +50,9 @@ export default function ForgotPassword() {
     } catch (err) {
       setError(err.message || 'Server error. Make sure backend is running.');
     } finally {
+      clearTimeout(wakingTimer);
       setLoading(false);
+      setWaking(false);
     }
   };
 
@@ -193,7 +197,11 @@ export default function ForgotPassword() {
             </div>
             {error && <p className="fp-error">{error}</p>}
             <button className="fp-btn primary" onClick={sendCode} disabled={loading || !email.trim()}>
-              {loading ? <><span className="fp-spinner" /> Sending...</> : <><FiShield size={14} /> Send Verify Code</>}
+              {loading
+                ? waking
+                  ? <><span className="fp-spinner" /> Waking server, please wait...</>
+                  : <><span className="fp-spinner" /> Sending...</>
+                : <><FiShield size={14} /> Send Verify Code</>}
             </button>
           </div>
         )}

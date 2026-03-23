@@ -22,6 +22,7 @@ export default function Signup() {
   const [otpVerified, setOtpVerified] = useState(false);
   const [otp, setOtp]                 = useState('');
   const [otpLoading, setOtpLoading]   = useState(false);
+  const [otpWaking, setOtpWaking]     = useState(false);
   const [otpError, setOtpError]       = useState('');
   const [otpSuccess, setOtpSuccess]   = useState('');
   const [cooldown, setCooldown]       = useState(0);
@@ -128,7 +129,8 @@ export default function Signup() {
   const pwdStrong = pwdRules.every(r => r.pass);
 
   const sendOtp = async () => {
-    setOtpLoading(true); setOtpError(''); setOtpSuccess('');
+    setOtpLoading(true); setOtpError(''); setOtpSuccess(''); setOtpWaking(false);
+    const wakingTimer = setTimeout(() => setOtpWaking(true), 5000);
     try {
       const res = await fetchWithTimeout(`${API}/auth/send-otp`, {
         method: 'POST',
@@ -148,7 +150,9 @@ export default function Signup() {
     } catch (err) {
       setOtpError(err.message || 'Server error. Make sure backend is running.');
     } finally {
+      clearTimeout(wakingTimer);
       setOtpLoading(false);
+      setOtpWaking(false);
     }
   };
 
@@ -311,7 +315,9 @@ export default function Signup() {
               onClick={sendOtp}
               disabled={otpLoading || cooldown > 0}>
               {otpLoading
-                ? <><span className="otp-spinner" /> Sending...</>
+                ? otpWaking
+                  ? <><span className="otp-spinner" /> Waking server, please wait...</>
+                  : <><span className="otp-spinner" /> Sending...</>
                 : cooldown > 0
                   ? `Resend OTP in ${cooldown}s`
                   : otpSent
