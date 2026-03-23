@@ -1,17 +1,24 @@
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 
 module.exports = {
   sendMail: async ({ to, subject, html }) => {
-    const apiKey = process.env.RESEND_API_KEY;
-    if (!apiKey) throw new Error('RESEND_API_KEY env var is not set on the server.');
-
-    const resend = new Resend(apiKey);
-    const { error } = await resend.emails.send({
-      from: 'FreshMart <onboarding@resend.dev>',
+    if (!process.env.MAIL_USER || !process.env.MAIL_PASS) {
+      throw new Error('MAIL_USER and MAIL_PASS env vars are not set on the server.');
+    }
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
+      },
+    });
+    await transporter.sendMail({
+      from: `"FreshMart" <${process.env.MAIL_USER}>`,
       to,
       subject,
       html,
     });
-    if (error) throw new Error(error.message);
   },
 };
