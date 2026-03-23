@@ -146,7 +146,7 @@ export default function Signup() {
       setCooldown(OTP_COOLDOWN);
       setTimeout(() => otpInputRef.current?.focus(), 100);
     } catch (err) {
-      setOtpError(err.message || 'Failed to send OTP.');
+      setOtpError(err?.text || err?.message || JSON.stringify(err) || 'Failed to send OTP.');
     } finally {
       setOtpLoading(false);
       setOtpWaking(false);

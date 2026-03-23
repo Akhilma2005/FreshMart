@@ -49,7 +49,7 @@ export default function ForgotPassword() {
       setCooldown(OTP_COOLDOWN);
       setTimeout(() => otpRef.current?.focus(), 100);
     } catch (err) {
-      setError(err.message || 'Failed to send code.');
+      setError(err?.text || err?.message || JSON.stringify(err) || 'Failed to send code.');
     } finally {
       setLoading(false);
       setWaking(false);
