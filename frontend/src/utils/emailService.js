@@ -1,7 +1,7 @@
 import emailjs from '@emailjs/browser';
 
 const SERVICE_ID  = 'service_4ij8jfn';
-const TEMPLATE_ID = 'template_4qo7ic1';
+const TEMPLATE_ID = 'template_lhvikdf';
 const PUBLIC_KEY  = 'IEFD7tVDSCValq0E_';
 
 export const sendOTPEmail = (toEmail, otp) =>
