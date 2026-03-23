@@ -36,29 +36,7 @@ router.post('/send-otp', async (req, res) => {
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   otpStore.set(email, otp);
-
-  try {
-    console.log('Sending OTP to:', email, '| MAIL_USER:', process.env.MAIL_USER);
-    await mailer.sendMail({
-      from: `"FreshMart" <${process.env.MAIL_USER}>`,
-      to: email,
-      subject: 'Your FreshMart OTP Code',
-      html: `
-        <div style="font-family:sans-serif;max-width:420px;margin:auto;padding:32px;border-radius:12px;border:1px solid #e5e7eb">
-          <h2 style="color:#0e9f6e;margin-bottom:4px">FreshMart</h2>
-          <p style="color:#374151">Your one-time verification code is:</p>
-          <div style="font-size:40px;font-weight:800;letter-spacing:12px;color:#065f46;margin:24px 0;text-align:center">${otp}</div>
-          <p style="color:#6b7280;font-size:13px">This OTP expires in <strong>5 minutes</strong>. Do not share it with anyone.</p>
-          <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0">
-          <p style="color:#9ca3af;font-size:12px">If you did not request this, please ignore this email.</p>
-        </div>
-      `,
-    });
-    res.json({ message: 'OTP sent successfully.' });
-  } catch (err) {
-    console.error('Mailer error:', err.message);
-    res.status(500).json({ message: 'Failed to send OTP. Please try again.' });
-  }
+  res.json({ otp }); // frontend sends the email via EmailJS
 });
 
 // POST /api/auth/verify-otp
@@ -163,35 +141,7 @@ router.post('/forgot-password', async (req, res) => {
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   otpStore.set(`reset_${email}`, otp);
-
-  try {
-    await mailer.sendMail({
-      from: `"FreshMart" <${process.env.MAIL_USER}>`,
-      to: email,
-      subject: 'FreshMart — Password Reset Code',
-      html: `
-        <div style="font-family:sans-serif;max-width:420px;margin:auto;
-                    padding:32px;border-radius:12px;border:1px solid #e5e7eb">
-          <h2 style="color:#0e9f6e;margin-bottom:4px">🔐 FreshMart</h2>
-          <p style="color:#374151">Your password reset verification code is:</p>
-          <div style="font-size:40px;font-weight:800;letter-spacing:12px;
-                      color:#065f46;margin:24px 0;text-align:center;
-                      background:#f0fdf4;padding:16px;border-radius:10px">${otp}</div>
-          <p style="color:#6b7280;font-size:13px">
-            Expires in <strong>5 minutes</strong>. Do not share with anyone.
-          </p>
-          <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0">
-          <p style="color:#9ca3af;font-size:12px">
-            If you did not request this, please ignore this email.
-          </p>
-        </div>
-      `,
-    });
-    res.json({ message: 'Verification code sent to your email.' });
-  } catch (err) {
-    console.error('Mailer error:', err.message);
-    res.status(500).json({ message: 'Failed to send email. Please try again.' });
-  }
+  res.json({ otp }); // frontend sends the email via EmailJS
 });
 
 // POST /api/auth/verify-reset-otp

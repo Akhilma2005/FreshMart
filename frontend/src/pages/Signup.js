@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FiUser, FiMail, FiLock, FiUserPlus, FiShoppingBag, FiShoppingCart, FiShield, FiRefreshCw } from 'react-icons/fi';
 import { AuthContext } from '../App';
 import API, { fetchWithTimeout } from '../api';
+import { sendOTPEmail } from '../utils/emailService';
 import './Signup.css';
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || '633026567214-7r9ht0b8lilnsf61j2lefn7484o4d1vh.apps.googleusercontent.com';
@@ -130,7 +131,6 @@ export default function Signup() {
 
   const sendOtp = async () => {
     setOtpLoading(true); setOtpError(''); setOtpSuccess(''); setOtpWaking(false);
-    const wakingTimer = setTimeout(() => setOtpWaking(true), 5000);
     try {
       const res = await fetchWithTimeout(`${API}/auth/send-otp`, {
         method: 'POST',
@@ -138,19 +138,16 @@ export default function Signup() {
         body: JSON.stringify({ email: email.trim() }),
       });
       const data = await res.json();
-      if (!res.ok) {
-        setOtpSent(false);
-        return setOtpError(data.message || 'Failed to send OTP.');
-      }
+      if (!res.ok) { setOtpSent(false); return setOtpError(data.message || 'Failed to send OTP.'); }
+      await sendOTPEmail(email.trim(), data.otp);
       setOtpSent(true);
       setOtpError('');
       setOtpSuccess(`OTP sent to ${email.trim()}`);
       setCooldown(OTP_COOLDOWN);
       setTimeout(() => otpInputRef.current?.focus(), 100);
     } catch (err) {
-      setOtpError(err.message || 'Server error. Make sure backend is running.');
+      setOtpError(err.message || 'Failed to send OTP.');
     } finally {
-      clearTimeout(wakingTimer);
       setOtpLoading(false);
       setOtpWaking(false);
     }

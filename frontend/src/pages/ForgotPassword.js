@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiMail, FiShield, FiLock, FiCheck, FiArrowLeft, FiRefreshCw } from 'react-icons/fi';
 import API, { fetchWithTimeout } from '../api';
+import { sendOTPEmail } from '../utils/emailService';
 import './ForgotPassword.css';
 
 const OTP_COOLDOWN = 60;
@@ -34,8 +35,7 @@ export default function ForgotPassword() {
 
   const sendCode = async () => {
     if (!email.trim()) return setError('Please enter your email.');
-    setError(''); setLoading(true); setWaking(false);
-    const wakingTimer = setTimeout(() => setWaking(true), 5000);
+    setError(''); setLoading(true);
     try {
       const res = await fetchWithTimeout(`${API}/auth/forgot-password`, {
         method: 'POST',
@@ -44,13 +44,13 @@ export default function ForgotPassword() {
       });
       const data = await res.json();
       if (!res.ok) return setError(data.message || 'Failed to send code.');
+      await sendOTPEmail(email.trim(), data.otp);
       setStep(1);
       setCooldown(OTP_COOLDOWN);
       setTimeout(() => otpRef.current?.focus(), 100);
     } catch (err) {
-      setError(err.message || 'Server error. Make sure backend is running.');
+      setError(err.message || 'Failed to send code.');
     } finally {
-      clearTimeout(wakingTimer);
       setLoading(false);
       setWaking(false);
     }
@@ -66,10 +66,11 @@ export default function ForgotPassword() {
       });
       const data = await res.json();
       if (!res.ok) return setError(data.message || 'Failed to resend.');
+      await sendOTPEmail(email.trim(), data.otp);
       setCooldown(OTP_COOLDOWN);
       setOtp('');
     } catch (err) {
-      setError(err.message || 'Server error.');
+      setError(err.message || 'Failed to resend.');
     } finally {
       setLoading(false);
     }
