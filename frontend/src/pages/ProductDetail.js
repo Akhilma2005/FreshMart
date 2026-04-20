@@ -392,7 +392,16 @@ export default function ProductDetail() {
           )}
           
           <div className="write-review-section" style={{ marginTop: product.totalReviews > 0 ? 0 : 0 }}>
-            {!reviewSubmitted ? (
+            {!auth ? (
+              <div style={{ textAlign: 'center', padding: '24px 16px', borderRadius: 16, background: '#f8fdf9', border: '1.5px dashed #b7e4c7' }}>
+                <div style={{ fontSize: 36, marginBottom: 12 }}>✍️</div>
+                <h4 style={{ fontSize: 15, color: 'var(--hk-green-900)', marginBottom: 8 }}>Want to write a review?</h4>
+                <p style={{ fontSize: 13, color: '#666', marginBottom: 16 }}>Please sign in to share your experience</p>
+                <button className="btn-buy" style={{ padding: '10px 28px', borderRadius: 10, fontWeight: 600 }} onClick={() => navigate('/login')}>
+                  Sign In to Review
+                </button>
+              </div>
+            ) : !reviewSubmitted ? (
                 <>
                   <h4 style={{ fontSize: 16, marginBottom: 8, color: 'var(--hk-green-900)' }}>Write a Review</h4>
                   <p style={{ fontSize: 13, color: '#666', marginBottom: 20 }}>Share your thoughts with other customers</p>
@@ -430,7 +439,8 @@ export default function ProductDetail() {
                   <button 
                     className="btn-buy" 
                     style={{ width: '100%', height: 48, borderRadius: 12, fontWeight: 600 }}
-                    onClick={async () => { 
+                    onClick={async () => {
+                      if (!auth) return navigate('/login');
                       if(!userComment.trim()) return alert('Please enter a comment');
                       const reviewData = {
                         productId: pid,
@@ -465,7 +475,6 @@ export default function ProductDetail() {
                 </div>
               )}
             </div>
-            <div className="review-list">
             {reviewsLoading ? (
               <div style={{ padding: 20, textAlign: 'center', color: '#888' }}>Loading reviews...</div>
             ) : reviews.length === 0 ? (
