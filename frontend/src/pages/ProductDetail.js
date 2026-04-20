@@ -475,6 +475,7 @@ export default function ProductDetail() {
                 </div>
               )}
             </div>
+            <div className="review-list">
             {reviewsLoading ? (
               <div style={{ padding: 20, textAlign: 'center', color: '#888' }}>Loading reviews...</div>
             ) : reviews.length === 0 ? (
