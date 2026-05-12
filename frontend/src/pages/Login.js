@@ -54,7 +54,9 @@ export default function Login() {
         cancel_on_tap_outside: false,
       });
       window.google.accounts.id.renderButton(googleBtnRef.current, {
-        theme: 'outline', size: 'large', width: 400, text: 'signin_with', shape: 'rectangular',
+        theme: 'outline', size: 'large',
+        width: googleBtnRef.current.offsetWidth || 400,
+        text: 'signin_with', shape: 'rectangular',
       });
     };
 
@@ -73,10 +75,6 @@ export default function Login() {
       return () => script.removeEventListener('load', initGoogle);
     }
   }, [handleGoogleResponse]);
-
-  const handleGoogleClick = () => {
-    googleBtnRef.current?.querySelector('div[role=button]')?.click();
-  };
 
   const handleSetRole = async () => {
     setRoleLoading(true);
@@ -215,11 +213,7 @@ export default function Login() {
 
           <div className="google-section fade-item delay-5">
             <div className="google-section-label"><span>or continue with</span></div>
-            <div ref={googleBtnRef} style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: 0, height: 0, overflow: 'hidden' }} />
-            <button type="button" className="login-btn google-login-btn" onClick={handleGoogleClick}>
-              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width={18} height={18} />
-              Sign in with Google
-            </button>
+            <div ref={googleBtnRef} className="google-btn-real" />
           </div>
 
           <div className="signup-cta-box">
